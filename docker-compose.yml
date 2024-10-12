@@ -42,6 +42,7 @@ services:
         condition: service_healthy
     networks:
       - net_eam_database
+    
 # --------------------------------------------------------------------
 
 networks:
