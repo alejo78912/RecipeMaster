@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     build: 
@@ -15,11 +13,12 @@ services:
     networks:
       - net_eam_database
     healthcheck:
-      test: ["CMD", "mysql", "-u", "root", "-proot"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
+        test: ["CMD","mysql", "-u", "root", "-proot"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+# --------------------------------------------------------------------
+  # - The adminer is a tool for managing content in databases.
   adminer:
     image: adminer
     container_name: adminer_eam
@@ -28,7 +27,8 @@ services:
       - 8080:8080
     networks:
       - net_eam_database
-
+# --------------------------------------------------------------------
+  # - fastapi refers to the container where the application backend will be stored.
   fastapi:
     build: 
       context: ./FastAPI
@@ -42,21 +42,9 @@ services:
         condition: service_healthy
     networks:
       - net_eam_database
-
-  front:
-    build:
-      context: ./RecipeMasterFront
-      dockerfile: Dockerfile
-    container_name: frontend
-    restart: always
-    ports:
-      - "4200:80"
-    depends_on:
-      - fastapi
-    networks:
-      - net_eam_database
+# --------------------------------------------------------------------
 
 networks:
   net_eam_database:
-    driver: bridge
-    name: net_eam_database
+      driver: bridge
+      name: net_eam_database

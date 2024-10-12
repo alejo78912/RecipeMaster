@@ -1,9 +1,19 @@
-from dotenv import load_dotenv
-from peewee import *
-from playhouse.sqlite_ext import SqliteExtDatabase
-
-
+from datetime import date
 import os
+from dotenv import load_dotenv
+from peewee import (MySQLDatabase,
+                    Model,
+                    AutoField,
+                    CharField,
+                    ForeignKeyField,
+                    IntegerField,
+                    FloatField,
+                    DateField,
+                    TextField, 
+                    BooleanField,
+                    DecimalField,
+                    DateTimeField,
+                    CompositeKey)
 
 load_dotenv()
 

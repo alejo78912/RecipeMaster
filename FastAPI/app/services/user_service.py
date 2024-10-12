@@ -43,16 +43,13 @@ class UserService:
         # Create a new user record
         new_user = UserModel(
             username=user_data.username,
-            name=user_data.name,
-            lastname=user_data.lastname,
             email=user_data.email,
             password=user_data.password,
-            profile_picture=user_data.profile_picture,
-            type_user=user_data.type_user,
+            profile_picture=user_data.profile_picture,  # Nullable field
         )
         new_user.save()
         return new_user
-
+    
     @staticmethod
     def get_user_by_id(id_user: int) -> UserModel:
         """
@@ -98,17 +95,14 @@ class UserService:
         """
         try:
             # Fetch the existing user
-            existing_user = UserModel.get(UserModel.id_user == user_data.id_user)
-            
+            existing_user = UserModel.get(UserModel.id == user_data.id)
+        
             # Update user details
             existing_user.username = user_data.username
-            existing_user.name = user_data.name
-            existing_user.lastname = user_data.lastname
             existing_user.email = user_data.email
             existing_user.password = user_data.password
-            existing_user.profile_picture = user_data.profile_picture
-            existing_user.type_user = user_data.type_user
-            
+            existing_user.profile_picture = user_data.profile_picture  # Nullable field
+        
             # Save updated user to the database
             existing_user.save()
             return existing_user
