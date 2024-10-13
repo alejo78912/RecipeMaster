@@ -45,11 +45,14 @@ class UserService:
             username=user_data.username,
             email=user_data.email,
             password=user_data.password,
+            phone_number=user_data.phone_number,
             profile_picture=user_data.profile_picture,  # Nullable field
+            creation_date=user_data.creation_date,
+            update_date=user_data.update_date
         )
         new_user.save()
         return new_user
-    
+
     @staticmethod
     def get_user_by_id(id_user: int) -> UserModel:
         """
@@ -65,7 +68,7 @@ class UserService:
             DoesNotExist: If the user does not exist.
         """
         try:
-            return UserModel.get(UserModel.id_user == id_user)
+            return UserModel.get(UserModel.id == id_user)
         except DoesNotExist as exc:
             raise ValueError("User does not exist") from exc
 
@@ -77,15 +80,17 @@ class UserService:
         Returns:
             list[UserModel]: A list of user objects.
         """
-        return list(UserModel.select())
-
+        users = list(UserModel.select())
+        return users
+    
     @staticmethod
-    def update_user(user_data: UserModel) -> UserModel:
+    def update_user(id_user: int, user_data: UserModel) -> UserModel:
         """
         Update a user in the database.
 
         Args:
-            user_data (UserModel): The user object to be updated.
+            id_user (int): The ID of the user to be updated.
+            user_data (UserModel): The updated user data.
 
         Returns:
             UserModel: The updated user object.
@@ -95,14 +100,15 @@ class UserService:
         """
         try:
             # Fetch the existing user
-            existing_user = UserModel.get(UserModel.id == user_data.id)
-        
+            existing_user = UserModel.get(UserModel.id == id_user)
+
             # Update user details
             existing_user.username = user_data.username
             existing_user.email = user_data.email
+            existing_user.phone_number = user_data.phone_number
             existing_user.password = user_data.password
             existing_user.profile_picture = user_data.profile_picture  # Nullable field
-        
+
             # Save updated user to the database
             existing_user.save()
             return existing_user
@@ -122,10 +128,9 @@ class UserService:
         """
         try:
             # Fetch the user to be deleted
-            user = UserModel.get(UserModel.id_user == id_user)
-            
+            user = UserModel.get(UserModel.id == id_user)
             # Delete the user instance from the database
             user.delete_instance()
-            return True
         except DoesNotExist as exc:
             raise ValueError("User does not exist") from exc
+        

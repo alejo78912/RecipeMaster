@@ -1,23 +1,27 @@
-"""Main module."""
-from fastapi import FastAPI, Depends
+"""Main module for Receipt Master."""
+from contextlib import asynccontextmanager  # Standard library import first
+from fastapi import FastAPI, Depends  # Third-party imports second
 from starlette.responses import RedirectResponse
-
-# Base de datos
-from config.database import database as connection
+from config.database import database as connection  # First-party imports last
 from routes.user_route import user_router
-from contextlib import asynccontextmanager
 from helpers.api_key_auth import get_api_key
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Conectar a la base de datos si la conexión está cerrada
+async def lifespan(_app: FastAPI):
+    """
+    Lifespan function to handle the database connection.
+
+    Args:
+        _app (FastAPI): The FastAPI application instance (currently unused).
+    """
+    # Connect to the database if the connection is closed
     if connection.is_closed():
         connection.connect()
     try:
-        yield  # Aquí es donde se ejecutará la aplicación
+        yield  # The application runs here
     finally:
-        # Cerrar la conexión cuando la aplicación se detenga
+        # Close the connection when the application stops
         if not connection.is_closed():
             connection.close()
 
@@ -25,13 +29,12 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Receipt Master",
     version="1.0",
-    contact={"name": "Juan Pablo Acosta Y Alejandro Valencia",
-             "url": "https://github.com/JPablo67",
-             "email": "juanpa.995@gmail.com"},
-    description="Receipt Master es una API que permite a los usuarios administrar sus recibos de forma eficiente.",
-
-
-    
+    contact={
+        "name": "Juan Pablo Acosta Y Alejandro Valencia",
+        "url": "https://github.com/JPablo67",
+        "email": "juanpa.995@gmail.com"
+    },
+    description="Receipt Master es una API de recetas",
 )
 
 

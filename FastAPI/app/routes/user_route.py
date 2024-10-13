@@ -6,7 +6,6 @@ This module defines the routes for user management in the FastAPI application.
 from fastapi import APIRouter, Body, HTTPException, status
 from models.user import User  # This should be the Pydantic model representing your input/output data
 from services.user_service import UserService
-from peewee import DoesNotExist
 
 user_router = APIRouter()
 
@@ -26,22 +25,19 @@ async def create_user(user: User = Body(...)):
         HTTPException: If a user with the same details already exists (400).
     """
     try:
-        created_user = UserService.create_user(user)
-        return created_user
+        return UserService.create_user(user)
     except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
-
-
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    
 @user_router.get("/users", response_model=list[User])
 async def get_all_users():
     """
-    Retrieve all users.
+    Retrieve all users and return them as Pydantic models.
 
     Returns:
         list[User]: A list of all registered users.
     """
-    users = UserService.get_all_users()
-    return users
+    return UserService.get_all_users()
 
 
 @user_router.get("/user/{id_user}", response_model=User)
@@ -61,10 +57,10 @@ async def get_user_by_id(id_user: int):
     try:
         return UserService.get_user_by_id(id_user)
     except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
-@user_router.delete("/user/{id_user}", status_code=status.HTTP_204_NO_CONTENT)
+@user_router.delete("/user/{id_user}", status_code=status.HTTP_200_OK)
 async def delete_user(id_user: int):
     """
     Delete a user by their ID.
@@ -76,11 +72,11 @@ async def delete_user(id_user: int):
         HTTPException: If the user does not exist (404).
     """
     try:
+        # Try to delete the user
         UserService.delete_user(id_user)
-        return None
+        return {"message": f"User with ID {id_user} was successfully deleted."}
     except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
-
+        raise HTTPException(status_code=404, detail=f"User with ID {id_user} not found.") from exc
 
 @user_router.put("/user/{id_user}", response_model=User)
 async def update_user(id_user: int, user: User = Body(...)):
@@ -98,8 +94,7 @@ async def update_user(id_user: int, user: User = Body(...)):
         HTTPException: If the user is not found (404).
     """
     try:
-        user.id_user = id_user
-        updated_user = UserService.update_user(user)
-        return updated_user
+        return UserService.update_user(id_user, user)
     except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    
