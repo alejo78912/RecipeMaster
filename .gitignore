@@ -1,0 +1,10 @@
+MySQL/volumes/
+MySQL/data/
+MySQL/logs/
+RecipeMasterFront/node_modules/
+dist
+*.log
+.env
+Dockerfile
+docker-compose.yml
+__pycache__
